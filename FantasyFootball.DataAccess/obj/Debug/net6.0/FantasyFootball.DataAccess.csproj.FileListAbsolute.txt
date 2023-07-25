@@ -1,0 +1,12 @@
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\bin\Debug\net6.0\FantasyFootball.DataAccess.deps.json
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\bin\Debug\net6.0\FantasyFootball.DataAccess.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\bin\Debug\net6.0\FantasyFootball.DataAccess.pdb
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.csproj.AssemblyReference.cache
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.AssemblyInfoInputs.cache
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.AssemblyInfo.cs
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\refint\FantasyFootball.DataAccess.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\FantasyFootball.DataAccess.pdb
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.DataAccess\obj\Debug\net6.0\ref\FantasyFootball.DataAccess.dll

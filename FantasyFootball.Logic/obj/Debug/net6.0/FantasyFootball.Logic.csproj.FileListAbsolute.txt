@@ -1,0 +1,15 @@
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\bin\Debug\net6.0\FantasyFootball.Logic.deps.json
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\bin\Debug\net6.0\FantasyFootball.Logic.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\bin\Debug\net6.0\FantasyFootball.Logic.pdb
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\bin\Debug\net6.0\FantasyFootball.DataAccess.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\bin\Debug\net6.0\FantasyFootball.DataAccess.pdb
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.csproj.AssemblyReference.cache
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.AssemblyInfoInputs.cache
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.AssemblyInfo.cs
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.csproj.CoreCompileInputs.cache
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.csproj.CopyComplete
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\refint\FantasyFootball.Logic.dll
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\FantasyFootball.Logic.pdb
+C:\Users\timho\Documents\repos\FantasyDraft\FantasyFootball.Logic\obj\Debug\net6.0\ref\FantasyFootball.Logic.dll
