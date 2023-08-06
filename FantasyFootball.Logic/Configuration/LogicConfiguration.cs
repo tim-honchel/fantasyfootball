@@ -10,7 +10,7 @@ namespace FantasyFootball.Logic.Configuration
         {
             services.AddTransient<ILeagueLogic, LeagueLogic>();
             services.AddTransient<IDataImportLogic, DataImportLogic>();
-            //services.AddTransient<IDraftStrategyLogic, DraftStrategyLogic>();
+            services.AddTransient<IDraftStrategyLogic, DraftStrategyLogic>();
             services.AddTransient<IHelperLogic, HelperLogic>();
             return services;
         }

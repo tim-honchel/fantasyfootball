@@ -5,9 +5,16 @@ namespace FantasyFootball.Logic.Implementations
 {
     public class HelperLogic : IHelperLogic
     {
-        public Task<bool> ValidateProjections(List<Player> players, Rules rules)
+        public bool ValidateProjections(List<Player> players, Rules rules)
         {
-            throw new NotImplementedException();
+            Dictionary<string,double> minByPos = new Dictionary<string, double>();
+            minByPos["QB"] = (rules.QB * rules.Bench *0.1) * rules.Teams;
+            minByPos["RB"] = (rules.RB + rules.FLEX *0.75 +rules.Bench * 0.5) * rules.Teams;
+            minByPos["WR"] = (rules.WR + rules.FLEX * 0.25 + rules.Bench *0.2) * rules.Teams;
+            minByPos["TE"] = (rules.TE + rules.Bench *0.1) * rules.Teams;
+            minByPos["DEF"] = rules.DEF * rules.Teams + 1;
+            minByPos["K"] = rules.K * rules.Teams + 1;
+            return true;
         }
         public bool ValidateRules(Rules rules)
         {

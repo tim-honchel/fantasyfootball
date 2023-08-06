@@ -17,10 +17,16 @@ namespace FantasyFootball.Logic.Implementations
         }
         public async Task<List<Player>> FetchProjections(int ESPNLeagueID, string projectionsCookie, Rules rules)
         {
-            List<Player> players = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie);
+            List<Player> qb = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie, "[0]",(int)(1.2* rules.Teams * (rules.QB + rules.Bench * 0.1)));
+            List<Player> rb = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie, "[2]", (int)(1.2 * rules.Teams * (rules.RB +rules.FLEX * 0.6 + rules.Bench * 0.5)));
+            List<Player> wr = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie, "[4]", (int)(1.2 * rules.Teams * (rules.WR + +rules.FLEX * 0.4 + rules.Bench * 0.3)));
+            List<Player> te = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie, "[6]", (int)(1.2 * rules.Teams * (rules.TE + rules.Bench * 0.1)));
+            List<Player> def = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie, "[16]", (int)(1.2 * rules.Teams * rules.DEF));
+            List<Player> k = await _playersRepository.RequestProjections(ESPNLeagueID, projectionsCookie, "[17]", (int)(1.2 * rules.Teams * rules.K));
+            List<Player> players = qb.Concat(rb).Concat(wr).Concat(te).Concat(def).Concat(k).ToList();
             if (players == null)
                 return null;
-            if (await _helperLogic.ValidateProjections(players, rules) == false)
+            if (_helperLogic.ValidateProjections(players, rules) == false)
                 return null;
             return players;
         }

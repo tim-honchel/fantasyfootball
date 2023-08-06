@@ -10,10 +10,6 @@ namespace FantasyFootball.DataAccess.Implementations
     public class RulesRepository : IRulesRepository
     {
         public readonly IConfiguration _configuration;
-        public RulesRepository()
-        {
-
-        }
         public RulesRepository(IConfiguration configuration)
         {
             _configuration = configuration;
