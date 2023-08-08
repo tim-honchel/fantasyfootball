@@ -9,7 +9,22 @@
         public string Team { get; set; } = string.Empty;
         public int Cost { get; set; }
         public double WeeklyPoints { get; set; }
-        public int LeagueID { get; set; }
+
+        public double QB1 { get; set; } = 0;
+        public double RB1 { get; set; } = 0;
+        public double RB2 { get; set; } = 0;
+        public double WR1 { get; set; } = 0;
+        public double WR2 { get; set; } = 0;
+        public double TE1 { get; set; } = 0;
+        public double  FLEX { get; set; } = 0;
+        public double DEF { get; set; } = 0;
+        public double K { get; set; } = 0;
+        public double FA { get; set; } = 0;
+        public double ExpectedValueLow { get; set; } = 0;
+        public double ExpectedValue { get; set; } = 0;
+        public double ExpectedValueHigh { get; set; } = 0;
+
+
 
     }
 }

@@ -3,7 +3,10 @@
 using FantasyFootball.DataAccess.Implementations;
 using FantasyFootball.DataAccess.Models;
 using FantasyFootball.Logic.Interfaces;
+using System.Reflection.Emit;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace FantasyFootball.Logic.Implementations
 {
@@ -27,7 +30,14 @@ namespace FantasyFootball.Logic.Implementations
             List<Player> flex = players.Where(x => (x.Position == "RB" && x.WeeklyPoints <= flexRB) || (x.Position == "WR" && x.WeeklyPoints <= flexWR)).OrderByDescending(x => x.WeeklyPoints).ToList();
             averages.FLEX = CalculateAverage(flex, rules.Teams, 0);
 
-            averages.total = averages.QB + averages.RB1 + averages.RB2 + averages.WR1 + averages.WR2 + averages.TE + averages.FLEX + averages.K + averages.DEF;
+            averages.total = Math.Round(averages.QB + averages.RB1 + averages.RB2 + averages.WR1 + averages.WR2 + averages.TE + averages.FLEX + averages.K + averages.DEF);
+
+            averages.FAQB = players.Where(x=>x.Position == "QB").OrderByDescending(x => x.WeeklyPoints).ToList()[(int)(rules.Teams * (rules.QB + rules.Bench * 0.1))].WeeklyPoints;
+            averages.FARB = players.Where(x => x.Position == "RB").OrderByDescending(x => x.WeeklyPoints).ToList()[(int)(rules.Teams * (rules.RB + rules.FLEX * 0.6 + rules.Bench * 0.5))].WeeklyPoints;
+            averages.FAWR = players.Where(x => x.Position == "WR").OrderByDescending(x => x.WeeklyPoints).ToList()[(int)(rules.Teams * (rules.WR + +rules.FLEX * 0.4 + rules.Bench * 0.3))].WeeklyPoints;
+            averages.FATE = players.Where(x => x.Position == "TE").OrderByDescending(x => x.WeeklyPoints).ToList()[(int)(rules.Teams * (rules.TE + rules.Bench * 0.1))].WeeklyPoints;
+            averages.FADEF = players.Where(x => x.Position == "DEF").OrderByDescending(x => x.WeeklyPoints).ToList()[rules.Teams].WeeklyPoints;
+            averages.FAK = players.Where(x => x.Position == "K").OrderByDescending(x => x.WeeklyPoints).ToList()[rules.Teams].WeeklyPoints;
 
             return averages;
         }
@@ -44,6 +54,50 @@ namespace FantasyFootball.Logic.Implementations
                 average = players[(int)(teams / 2 - 1 + exclude)].WeeklyPoints;
             }
             return Math.Round(average, 2);
+        }
+
+
+        public List<Player> GetRelativePoints(List<Player> players, Averages averages)
+        {
+            foreach (Player player in players)
+            {
+                if (player.Position == "QB")
+                {
+                    player.QB1 = Math.Round(player.WeeklyPoints - averages.QB,2);
+                    player.FA = Math.Round(player.WeeklyPoints - averages.FAQB, 2);
+                }
+                else if (player.Position == "RB")
+                {
+                    player.RB1 = Math.Round(player.WeeklyPoints - averages.RB1,2);
+                    player.RB2 = Math.Round(player.WeeklyPoints - averages.RB2,2);
+                    player.FLEX = Math.Round(player.WeeklyPoints - averages.FLEX,2);
+                    player.FA = Math.Round(player.WeeklyPoints - averages.FARB, 2);
+                }
+                else if (player.Position == "WR")
+                {
+                    player.WR1 = Math.Round(player.WeeklyPoints - averages.WR1,2);
+                    player.WR2 = Math.Round(player.WeeklyPoints - averages.WR2,2);
+                    player.FLEX = Math.Round(player.WeeklyPoints - averages.FLEX,2);
+                    player.FA = Math.Round(player.WeeklyPoints - averages.FAWR, 2);
+                }
+                else if (player.Position == "TE")
+                {
+                    player.TE1 = Math.Round(player.WeeklyPoints - averages.TE,2);
+                    player.FA = Math.Round(player.WeeklyPoints - averages.FATE, 2);
+                }
+                else if (player.Position == "DEF")
+                {
+                    player.DEF = Math.Round(player.WeeklyPoints - averages.DEF,2);
+                    player.FA = Math.Round(player.WeeklyPoints - averages.FADEF, 2);
+                }
+                else if (player.Position == "K")
+                {
+                    player.K = Math.Round(player.WeeklyPoints - averages.K,2);
+                    player.FA = Math.Round(player.WeeklyPoints - averages.FAK, 2);
+                }
+                
+            }
+            return players;
         }
         public List<Player> GetSalaryRank(List<Player> players, Averages averages)
         {
@@ -377,6 +431,177 @@ namespace FantasyFootball.Logic.Implementations
             }
 
             return currentPlayers;
+        }
+
+        public CostAnalysis GetCostAnalysis(List<Player> players)
+        {
+            CostAnalysis analysis = new CostAnalysis();
+
+            List<Player> qbs = players.Where(x => x.Position == "QB").ToList();
+            List<Player> rbs = players.Where(x => x.Position == "RB").ToList();
+            List<Player> wrs = players.Where(x => x.Position == "WR").ToList();
+            List<Player> tes = players.Where(x => x.Position == "TE").ToList();
+
+            analysis = CalculateSlopeAndIntercept(analysis, "QB", qbs);
+            analysis = CalculateSlopeAndIntercept(analysis, "RB", rbs);
+            analysis = CalculateSlopeAndIntercept(analysis, "WR", wrs);
+            analysis = CalculateSlopeAndIntercept(analysis, "TE", tes);
+
+            return analysis;
+        }
+
+        public CostAnalysis CalculateSlopeAndIntercept(CostAnalysis analysis, string position, List<Player> players)
+        {
+            double sumPoints = players.Sum(x => x.FA);
+            double sumPrice = players.Sum(x => x.Cost);
+
+            double sumXSquared = players.Sum(x => x.FA * x.FA);
+            double sumXY = players.Sum(x => x.FA * x.Cost);
+
+            double slope = Math.Round((players.Count() * sumXY - sumPoints * sumPrice) / (players.Count() * sumXSquared - sumPoints * sumPoints),2);
+            double intercept = Math.Round((sumPrice - slope * sumPoints)/players.Count(),2);
+            double residual = Math.Round(players.Sum(x => Math.Abs(x.Cost - slope * x.FA + intercept))/players.Count(),2);
+
+            Player topPlayer = players.OrderByDescending(x => x.Cost).FirstOrDefault();
+            Player bottomPlayer = players.Where(x => x.Cost > 0).OrderByDescending(x => x.Cost).LastOrDefault();
+            double margin = residual / topPlayer.Cost;
+            double topDifference = topPlayer.Cost - (topPlayer.FA * slope + intercept);
+            double bottomDifference = bottomPlayer.Cost - (bottomPlayer.FA * slope + intercept);
+
+            residual = residual * .5;
+            
+            if (position == "QB")
+            {
+                analysis.QBSlope = slope;
+                analysis.QBIntercept = intercept;
+                analysis.QBResidual = residual;
+            }
+            else if (position == "RB")
+            {
+                analysis.RBSlope = slope;
+                analysis.RBIntercept = intercept;
+                analysis.RBResidual = residual;
+            }
+            else if (position == "WR")
+            {
+                analysis.WRSlope = slope;
+                analysis.WRIntercept = intercept;
+                analysis.WRResidual = residual;
+            }
+            else if (position == "TE")
+            {
+                analysis.TESlope = slope;
+                analysis.TEIntercept = intercept;
+                analysis.TEResidual = residual;
+            }
+            if (margin >= 0.25 && topDifference > 0 && bottomDifference < 0 && position == "RB")
+            {
+                analysis.RB1EffectUp = Math.Round(topDifference / ((topPlayer.RB1 + topPlayer.RB2)/2),2);
+                analysis.RB1EffectDown = Math.Round(bottomDifference / ((bottomPlayer.RB1+bottomPlayer.RB2)/2),2);
+            }
+
+
+            return analysis;
+        }
+
+        public List<Player> GetExpectedValue(List<Player> players, CostAnalysis analysis)
+        {
+            foreach (Player player in players)
+            {
+                if (player.Position == "QB")
+                {
+                    player.ExpectedValue = player.FA * analysis.QBSlope + analysis.QBIntercept;
+                    player.ExpectedValueHigh = player.ExpectedValue + analysis.QBResidual;
+                    player.ExpectedValueLow = player.ExpectedValue - analysis.QBResidual;
+                }
+                else if (player.Position == "RB")
+                {
+                    player.ExpectedValue = player.FA * analysis.RBSlope + analysis.RBIntercept;
+                    player.ExpectedValue = player.RB1 + player.RB2 > 0 ? player.ExpectedValue + (player.RB1+player.RB2)/2 * analysis.RB1EffectUp : player.ExpectedValue + (player.RB1+player.RB2)/2 * analysis.RB1EffectDown;
+                    player.ExpectedValueHigh = player.ExpectedValue + analysis.RBResidual;
+                    player.ExpectedValueLow = player.ExpectedValue - analysis.RBResidual;
+                }
+                else if (player.Position == "WR")
+                {
+                    player.ExpectedValue = player.FA * analysis.WRSlope + analysis.WRIntercept;
+                    player.ExpectedValueHigh = player.ExpectedValue + analysis.WRResidual;
+                    player.ExpectedValueLow = player.ExpectedValue - analysis.WRResidual;
+                }
+                if (player.Position == "TE")
+                {
+                    player.ExpectedValue = player.FA * analysis.TESlope + analysis.TEIntercept;
+                    player.ExpectedValueHigh = player.ExpectedValue + analysis.TEResidual;
+                    player.ExpectedValueLow = player.ExpectedValue - analysis.TEResidual;
+                }
+                else if (player.Position == "K" || player.Position == "DEF")
+                {
+                    player.ExpectedValue = player.Cost;
+                    player.ExpectedValueHigh = 1;
+                    player.ExpectedValueLow = 0;
+                }
+                player.ExpectedValue = Math.Round(player.ExpectedValue, 0);
+                player.ExpectedValueHigh = Math.Round(player.ExpectedValueHigh, 0);
+                player.ExpectedValueLow = Math.Round(player.ExpectedValueLow, 0);
+                if (player.ExpectedValue < 0) { player.ExpectedValue = 0; }
+                if (player.ExpectedValueHigh < 0) { player.ExpectedValueHigh = 0; }
+                if (player.ExpectedValueLow < 0) { player.ExpectedValueLow = 0; }
+
+            }
+            return players;
+        }
+
+        public string GetSpreadsheet(List<Player> players)
+        {
+            StringBuilder csv = new StringBuilder();
+
+            List<Player> qb = players.Where(x => x.Position == "QB").OrderByDescending(x => x.WeeklyPoints).ToList();
+            csv.AppendLine("QB, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +QB1, +FA");
+            foreach (Player player in qb)
+            {
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.QB1},{player.FA}");
+            }
+            csv.AppendLine();
+            
+            List<Player> rb = players.Where(x => x.Position == "RB").OrderByDescending(x => x.WeeklyPoints).ToList();
+            csv.AppendLine("RB, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +RB1, +RB2, +FLEX, +FA");
+            foreach (Player player in rb)
+            {
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.RB1}, {player.RB2}, {player.FLEX}, {player.FA}");
+            }
+            csv.AppendLine();
+
+            List<Player> wr = players.Where(x => x.Position == "WR").OrderByDescending(x => x.WeeklyPoints).ToList();
+            csv.AppendLine("WR, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +WR1, +WR2, +FLEX, +FA");
+            foreach (Player player in wr)
+            {
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.WR1}, {player.WR2}, {player.FLEX}, {player.FA}");
+            }
+            csv.AppendLine();
+
+            List<Player> te = players.Where(x => x.Position == "TE").OrderByDescending(x => x.WeeklyPoints).ToList();
+            csv.AppendLine("TE, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +TE1, +FA");
+            foreach (Player player in te)
+            {
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.TE1},{player.FA}");
+            }
+            csv.AppendLine();
+
+            List<Player> def = players.Where(x => x.Position == "DEF").OrderByDescending(x => x.WeeklyPoints).ToList();
+            csv.AppendLine("DEF, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +DEF1, +FA");
+            foreach (Player player in def)
+            {
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.DEF},{player.FA}");
+            }
+            csv.AppendLine();
+
+            List<Player> k = players.Where(x => x.Position == "K").OrderByDescending(x => x.WeeklyPoints).ToList();
+            csv.AppendLine("K, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +K1, +FA");
+            foreach (Player player in k)
+            {
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.K},{player.FA}");
+            }
+
+            return csv.ToString();
         }
 
 

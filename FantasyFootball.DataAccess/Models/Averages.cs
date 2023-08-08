@@ -12,5 +12,11 @@
         public double DEF { get; set; }
         public double K { get; set; }
         public double total { get; set; }
+        public double FAQB { get; set; }
+        public double FARB { get; set; }
+        public double FAWR { get; set; }
+        public double FATE { get; set; }
+        public double FADEF { get; set; }
+        public double FAK { get; set; }
     }
 }
