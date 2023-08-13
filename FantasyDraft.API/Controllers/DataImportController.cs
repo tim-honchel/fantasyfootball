@@ -17,7 +17,7 @@ namespace FantasyDraft.API.Controllers
         }
 
         [HttpPost("leagueRules")]
-        [SwaggerOperation(Summary = "Fetch league rules from ESPN", Description = "{'ESPNLeagueID' = int, 'rulesCookie' = string}")]
+        [SwaggerOperation(Summary = "Fetch league rules from ESPN. Use espn_s2 cookie", Description = "{'ESPNLeagueID' = int, 'rulesCookie' = string}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<League>), Description = "OK - found and returned rules")]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "Bad Request - error processing the request")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "Not Found - no rules could be found")]
@@ -38,7 +38,7 @@ namespace FantasyDraft.API.Controllers
         }
 
         [HttpPost("playerProjections")]
-        [SwaggerOperation(Summary = "Fetch player fantasy projections from ESPN", Description = "{'ESPNLeagueID' = int, 'projectionsCookie' = string, 'rules' = {} }")]
+        [SwaggerOperation(Summary = "Fetch player fantasy projections from ESPN. Use espn_s2 cookie", Description = "{'ESPNLeagueID' = int, 'projectionsCookie' = string, 'rules' = {} }")]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<League>), Description = "OK - found and returned all players")]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "Bad Request - error processing the request")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "Not Found - no players could be found")]
