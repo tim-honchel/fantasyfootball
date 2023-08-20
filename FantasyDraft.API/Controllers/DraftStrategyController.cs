@@ -1,6 +1,7 @@
 ﻿using FantasyFootball.DataAccess.Models;
 using FantasyFootball.Logic.Implementations;
 using FantasyFootball.Logic.Interfaces;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Http.Headers;
@@ -19,19 +20,20 @@ namespace FantasyDraft.API.Controllers
             _draftStrategyLogic = draftStrategyLogic;
         }
 
-        [HttpPost("addGoodTags")]
-        public async Task<IActionResult> AddGoodPlayerTags([FromBody] List<Player> players)
-        {
-            // cost analysis
-            // rules
-            return new OkObjectResult(players);
-        }
-
-        [HttpPost("addNominationTags")]
+        [HttpPost("addOtherTags")]
         public async Task<IActionResult> AddNominationPlayerTags([FromBody] List<Player> players)
         {
-            // cost analysis
-            // rules
+            foreach (Player player in players)
+            {
+                if (player.Tags.Count == 0 && player.PercentOfTopRosters > 10)
+                {
+                    player.Tags.Add("Solid");
+                }
+                else if (player.PercentOfTopRosters < 1 && player.Cost > 5)
+                {
+                    player.Tags.Add("Nomination");
+                }
+            }
             return new OkObjectResult(players);
         }
 
@@ -40,6 +42,24 @@ namespace FantasyDraft.API.Controllers
         {
             players = _draftStrategyLogic.AddTopTags(players, qb, rb1, rb2, wr1, wr2, te, flex, def, k);
             return new OkObjectResult(players);
+        }
+
+        [HttpPost("addTopRosterPercent")]
+        public async Task<IActionResult> AddTopRosterPercent([FromBody] PercentRequest request)
+        {
+            List<Player> players = request.Players;
+            Dictionary<int,int> count = request.CountByID;
+            int total = count[0];
+            int x = 0;
+            foreach (Player player in players)
+            {
+                if (count.ContainsKey(player.PlayerID))
+                {
+                    x = count[player.PlayerID];
+                    player.PercentOfTopRosters = Math.Round(100* (double)x / (double)total,1);
+                }
+            }
+            return new OkObjectResult(players.OrderByDescending(x => x.PercentOfTopRosters).ToList()) ;
         }
         
 
@@ -67,6 +87,23 @@ namespace FantasyDraft.API.Controllers
             };
             List<Player> playersWithValues = _draftStrategyLogic.GetExpectedValue(players, analysis);
            return new OkObjectResult(playersWithValues);
+        }
+
+        [HttpPost("exampleRosters")]
+        public async Task<IActionResult> GenerateExampleRosters([FromBody] List<Rosters> rosters, [FromHeader] List<int> PlayerIDs)
+        { 
+            List<Rosters> topRosters = new List<Rosters>();
+            foreach(int id in PlayerIDs)
+            {
+                Rosters roster = rosters.Where(x=>x.QB == id || x.RB1 == id || x.WR1 == id || x.TE == id).FirstOrDefault();
+                if (roster != null)
+                {
+                    topRosters.Add(roster);
+                    rosters.Remove(roster);
+                }
+                
+            }
+            return new OkObjectResult(topRosters);
         }
 
         [HttpPost("exportSpreadsheet")]
@@ -101,7 +138,111 @@ namespace FantasyDraft.API.Controllers
             return new OkObjectResult(rosters);
         }
 
+        [HttpPost("isolateTopPlayers")]
+        public async Task<IActionResult> IsolateTopPlayers([FromBody] List<Player> players)
+        {
+            List<int> playerIDs = new List<int>();
+            List<Player> topPlayers = players.Where(x => x.PercentOfTopRosters >= 10 && (x.Position == "QB" || x.Position == "RB" || x.Position == "WR" || x.Position == "TE")).ToList();
+            foreach (Player player in topPlayers)
+            {
+                playerIDs.Add(player.PlayerID);
+            }
+            return new OkObjectResult(playerIDs);
+        }
 
+        [HttpPost("playerPlayoffPercent")]
+        public async Task<IActionResult> CalculatePlayoffPercent([FromBody] List<Rosters> rosters)
+        {
+            Dictionary<int, int> result = new Dictionary<int, int>();
+            int count = 0;
+            foreach (Rosters roster in rosters)
+            {
+                count += 1;
+               if (result.ContainsKey(roster.QB))
+                {
+                    result[roster.QB] += 1;
+                }
+               else
+                {
+                    result[roster.QB] = 1;
+                }
+
+                if (result.ContainsKey(roster.RB1))
+                {
+                    result[roster.RB1] += 1;
+                }
+                else
+                {
+                    result[roster.RB1] = 1;
+                }
+
+                if (result.ContainsKey(roster.RB2))
+                {
+                    result[roster.RB2] += 1;
+                }
+                else
+                {
+                    result[roster.RB2] = 1;
+                }
+
+                if (result.ContainsKey(roster.WR1))
+                {
+                    result[roster.WR1] += 1;
+                }
+                else
+                {
+                    result[roster.WR1] = 1;
+                }
+
+                if (result.ContainsKey(roster.WR2))
+                {
+                    result[roster.WR2] += 1;
+                }
+                else
+                {
+                    result[roster.WR2] = 1;
+                }
+
+                if (result.ContainsKey(roster.TE))
+                {
+                    result[roster.TE] += 1;
+                }
+                else
+                {
+                    result[roster.TE] = 1;
+                }
+
+                if (result.ContainsKey(roster.FLEX))
+                {
+                    result[roster.FLEX] += 1;
+                }
+                else
+                {
+                    result[roster.FLEX] = 1;
+                }
+
+                if (result.ContainsKey(roster.DEF))
+                {
+                    result[roster.DEF] += 1;
+                }
+                else
+                {
+                    result[roster.DEF] = 1;
+                }
+
+                if (result.ContainsKey(roster.K))
+                {
+                    result[roster.K] += 1;
+                }
+                else
+                {
+                    result[roster.K] = 1;
+                }
+
+            }
+            result[0] = count;
+            return new OkObjectResult(result);
+        }
 
         [HttpPost("pointAverages")]
         [SwaggerOperation(Summary = "Determine average points per position")]

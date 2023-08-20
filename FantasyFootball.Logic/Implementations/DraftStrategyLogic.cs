@@ -556,50 +556,50 @@ namespace FantasyFootball.Logic.Implementations
             StringBuilder csv = new StringBuilder();
 
             List<Player> qb = players.Where(x => x.Position == "QB").OrderByDescending(x => x.WeeklyPoints).ToList();
-            csv.AppendLine("QB, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +QB1, +FA");
+            csv.AppendLine("QB, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +QB1, +FA, Top Teams, Tags");
             foreach (Player player in qb)
             {
-                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.QB1},{player.FA}");
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.QB1},{player.FA},{player.PercentOfTopRosters}%,{player.Tags.FirstOrDefault()}");
             }
             csv.AppendLine();
             
             List<Player> rb = players.Where(x => x.Position == "RB").OrderByDescending(x => x.WeeklyPoints).ToList();
-            csv.AppendLine("RB, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +RB1, +RB2, +FLEX, +FA");
+            csv.AppendLine("RB, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +RB1, +RB2, +FLEX, +FA, Top Teams, Tags");
             foreach (Player player in rb)
             {
-                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.RB1}, {player.RB2}, {player.FLEX}, {player.FA}");
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.RB1}, {player.RB2}, {player.FLEX}, {player.FA},{player.PercentOfTopRosters}%,{player.Tags.FirstOrDefault()}");
             }
             csv.AppendLine();
 
             List<Player> wr = players.Where(x => x.Position == "WR").OrderByDescending(x => x.WeeklyPoints).ToList();
-            csv.AppendLine("WR, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +WR1, +WR2, +FLEX, +FA");
+            csv.AppendLine("WR, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +WR1, +WR2, +FLEX, +FA, Top Teams, Tags");
             foreach (Player player in wr)
             {
-                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.WR1}, {player.WR2}, {player.FLEX}, {player.FA}");
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.WR1}, {player.WR2}, {player.FLEX}, {player.FA},{player.PercentOfTopRosters}%,{player.Tags.FirstOrDefault()}");
             }
             csv.AppendLine();
 
             List<Player> te = players.Where(x => x.Position == "TE").OrderByDescending(x => x.WeeklyPoints).ToList();
-            csv.AppendLine("TE, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +TE1, +FA");
+            csv.AppendLine("TE, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +TE1, +FA, Top Teams, Tags");
             foreach (Player player in te)
             {
-                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.TE1},{player.FA}");
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.TE1},{player.FA},{player.PercentOfTopRosters}%,{player.Tags.FirstOrDefault()}");
             }
             csv.AppendLine();
 
             List<Player> def = players.Where(x => x.Position == "DEF").OrderByDescending(x => x.WeeklyPoints).ToList();
-            csv.AppendLine("DEF, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +DEF1, +FA");
+            csv.AppendLine("DEF, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +DEF1, +FA, Top Teams, Tags");
             foreach (Player player in def)
             {
-                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.DEF},{player.FA}");
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.DEF},{player.FA},{player.PercentOfTopRosters}%,{player.Tags.FirstOrDefault()}");
             }
             csv.AppendLine();
 
             List<Player> k = players.Where(x => x.Position == "K").OrderByDescending(x => x.WeeklyPoints).ToList();
-            csv.AppendLine("K, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +K1, +FA");
+            csv.AppendLine("K, Team, Avg Cost, Lo|Med|Hi, Proj PPW, +K1, +FA, Top Teams, Tags");
             foreach (Player player in k)
             {
-                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.K},{player.FA}");
+                csv.AppendLine($"{player.FirstInitial} {player.LastName},{player.Team},{player.Cost},{player.ExpectedValueLow}|{player.ExpectedValue}|{player.ExpectedValueHigh},{player.WeeklyPoints},{player.K},{player.FA},{player.PercentOfTopRosters}%,{player.Tags.FirstOrDefault()}");
             }
 
             return csv.ToString();
@@ -646,22 +646,59 @@ namespace FantasyFootball.Logic.Implementations
             };
             Dictionary<string, int> maxPosition = new Dictionary<string, int>()
             {           
-                {"QB", rules.Teams * rules.QB - 3},
-                {"RB", rules.Teams * (rules.RB + rules.FLEX) - 10},
-                {"WR", rules.Teams * (rules.WR + rules.FLEX) - 10},
-                {"TE", rules.Teams * rules.TE - 3},
-                {"DEF", rules.Teams * rules.DEF - 5},
-                {"K", rules.Teams * rules.K - 5}
+                {"QB", rules.Teams * rules.QB - 2},
+                {"RB", rules.Teams * (rules.RB + rules.FLEX)-4},
+                {"WR", rules.Teams * (rules.WR + rules.FLEX)-4},
+                {"TE", rules.Teams * rules.TE - 2},
+                {"DEF", rules.Teams * rules.DEF - 2},
+                {"K", rules.Teams * rules.K - 2}
             };
             foreach (Player player in players)
             {
                 if (currentPosition[player.Position] < maxPosition[player.Position])
                 {
-                    draftablePlayers.Add(player);
+                    if (currentPosition[player.Position] == 0 || CheckValue(player))
+                    {
+                        draftablePlayers.Add(player);
+                    }
                     currentPosition[player.Position] += 1;
                 }
             }
             return draftablePlayers;
+        }
+
+        public bool CheckValue(Player player)
+        {
+            if (player.Cost > player.ExpectedValue + 7)
+            {
+                return false;
+            }
+            if (player.Position == "QB" && player.QB1 < -1)
+            {
+                return false;
+            }
+            else if (player.Position == "RB" && player.RB2 < -1 && player.FLEX < -1)
+            {
+                return false;
+            }
+            else if (player.Position == "WR" && player.WR2 < -1 && player.FLEX < -1)
+            {
+                return false;
+            }
+            else if (player.Position == "TE" && player.TE1 < -1)
+            {
+                return false;
+            }
+            else if (player.Position == "DEF" && player.DEF < -1)
+            {
+                return false;
+            }
+            else if (player.Position == "K" && player.K < -1)
+            {
+                return false;
+            }
+            return true;
+
         }
 
         public List<Player> PrepareDraftList(List<Player> players, Rules rules)

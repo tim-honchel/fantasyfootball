@@ -23,6 +23,7 @@
         public double ExpectedValueLow { get; set; } = 0;
         public double ExpectedValue { get; set; } = 0;
         public double ExpectedValueHigh { get; set; } = 0;
+        public double PercentOfTopRosters { get; set; } = 0;
         public List<string> Tags { get; set; } = new List<string>();
 
 
