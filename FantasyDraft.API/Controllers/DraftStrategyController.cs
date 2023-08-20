@@ -19,6 +19,30 @@ namespace FantasyDraft.API.Controllers
             _draftStrategyLogic = draftStrategyLogic;
         }
 
+        [HttpPost("addGoodTags")]
+        public async Task<IActionResult> AddGoodPlayerTags([FromBody] List<Player> players)
+        {
+            // cost analysis
+            // rules
+            return new OkObjectResult(players);
+        }
+
+        [HttpPost("addNominationTags")]
+        public async Task<IActionResult> AddNominationPlayerTags([FromBody] List<Player> players)
+        {
+            // cost analysis
+            // rules
+            return new OkObjectResult(players);
+        }
+
+        [HttpPost("addTopTags")]
+        public async Task<IActionResult> AddTopPlayerTags([FromBody] List<Player> players, [FromQuery] int qb, [FromQuery] int rb1, [FromQuery] int rb2, [FromQuery] int wr1, [FromQuery] int wr2, [FromQuery] int te, [FromQuery] int flex, [FromQuery] int def, [FromQuery] int k)
+        {
+            players = _draftStrategyLogic.AddTopTags(players, qb, rb1, rb2, wr1, wr2, te, flex, def, k);
+            return new OkObjectResult(players);
+        }
+        
+
         [HttpPost("expectedValue")]
         [SwaggerOperation(Summary = "Calculate expected cost range based on projected point")]
         [ProducesResponseType(typeof(void), 200)]
@@ -48,11 +72,33 @@ namespace FantasyDraft.API.Controllers
         [HttpPost("exportSpreadsheet")]
         [SwaggerOperation(Summary = "Convert player data to Excel")]
         [ProducesResponseType(typeof(void), 200)]
-        public async Task<IActionResult> CanvertToSpreadsheet([FromBody] List<Player> players)
+        public async Task<IActionResult> ConvertToSpreadsheet([FromBody] List<Player> players)
         {
             string csv = _draftStrategyLogic.GetSpreadsheet(players.Where(x=>x.FA >= 0).ToList());
             var fileBytes = Encoding.UTF8.GetBytes(csv);
             return File(fileBytes, "text/csv","reports.csv");
+        }
+
+        [HttpPost("findRosters")]
+        [SwaggerOperation(Summary = "Find best combinations")]
+        [ProducesResponseType(typeof(void), 200)]
+        public async Task<IActionResult> BuildRosters([FromBody] List<Player> players, [FromQuery] double targetPoints, [FromQuery] int teams, [FromQuery] int cap, [FromQuery] int qb, [FromQuery] int rb, [FromQuery] int wr, [FromQuery] int te, [FromQuery] int flex, [FromQuery] int k, [FromQuery] int def, [FromQuery] int bench)
+        {
+            Rules rules = new Rules()
+            {
+                Teams = teams,
+                SalaryCap = cap,
+                QB = qb,
+                RB = rb,
+                WR = wr,
+                TE = te,
+                FLEX = flex,
+                DEF = def,
+                K = k,
+                Bench = bench
+            };
+            List<Rosters> rosters = _draftStrategyLogic.BuildBestRosters(players, rules, targetPoints);
+            return new OkObjectResult(rosters);
         }
 
 

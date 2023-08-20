@@ -7,6 +7,7 @@ namespace FantasyFootball.Logic.Interfaces
 {
     public interface IDraftStrategyLogic
     {
+        List<Player> AddTopTags(List<Player> players, int qb, int rb1, int rb2, int wr1, int wr2, int te, int flex, int def, int k);
         Averages GetAverages(List<Player> players, Rules rules);
         List<Player> GetRelativePoints(List<Player> players, Averages averages);
         List<Player> GetStrongRoster(List<Player> players, Rules rules);
@@ -15,6 +16,7 @@ namespace FantasyFootball.Logic.Interfaces
         CostAnalysis GetCostAnalysis(List<Player> players);
         List<Player> GetExpectedValue(List<Player> players, CostAnalysis analysis);
         string GetSpreadsheet(List<Player> players);
+        List<Rosters> BuildBestRosters(List<Player> players, Rules rules, double targetPoints);
 
 
     }

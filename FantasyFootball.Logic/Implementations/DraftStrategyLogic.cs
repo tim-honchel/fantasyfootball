@@ -167,8 +167,9 @@ namespace FantasyFootball.Logic.Implementations
             };
             string maxSlope = "";
 
-            while ((salary > rules.SalaryCap - rules.Bench && qb.Count > 1 && rb1.Count > 1 && rb2.Count > 1 && wr1.Count > 1 && wr2.Count > 1 && te.Count > 1 && flex.Count > 1 && def.Count > 1 && k.Count > 1) || (rb1[0].PlayerID == rb2[0].PlayerID || wr1[0].PlayerID == wr2[0].PlayerID || flex[0].PlayerID == rb1[0].PlayerID || flex[0].PlayerID == rb2[0].PlayerID || flex[0].PlayerID == wr1[0].PlayerID || flex[0].PlayerID == wr2[0].PlayerID))
-            {
+            //while ((salary > rules.SalaryCap - rules.Bench && qb.Count > 1 && rb1.Count > 1 && rb2.Count > 1 && wr1.Count > 1 && wr2.Count > 1 && te.Count > 1 && flex.Count > 1 && def.Count > 1 && k.Count > 1) || (rb1[0].PlayerID == rb2[0].PlayerID || wr1[0].PlayerID == wr2[0].PlayerID || flex[0].PlayerID == rb1[0].PlayerID || flex[0].PlayerID == rb2[0].PlayerID || flex[0].PlayerID == wr1[0].PlayerID || flex[0].PlayerID == wr2[0].PlayerID))
+              while ((salary > rules.SalaryCap - rules.Bench && qb.Count >= 1 && rb1.Count >= 1 && rb2.Count >= 1 && wr1.Count >= 1 && wr2.Count >= 1 && te.Count >= 1 && flex.Count >= 1 && def.Count >= 1 && k.Count >= 1) || (rb1[0].PlayerID == rb2[0].PlayerID || wr1[0].PlayerID == wr2[0].PlayerID || flex[0].PlayerID == rb1[0].PlayerID || flex[0].PlayerID == rb2[0].PlayerID || flex[0].PlayerID == wr1[0].PlayerID || flex[0].PlayerID == wr2[0].PlayerID))
+                {
                     var remove = flex.SingleOrDefault(x => x.PlayerID == rb1[0].PlayerID);
                     if (remove != null && flex.Count>1) { flex.Remove(remove); }
                     remove = flex.SingleOrDefault(x => x.PlayerID == rb2[0].PlayerID);
@@ -183,15 +184,15 @@ namespace FantasyFootball.Logic.Implementations
                     if (remove != null && wr2.Count > 1) { wr2.Remove(remove); }
                 if (salary > rules.SalaryCap - rules.Bench)
                 {
-                    slope["QB"] = qb.Count > 1 ? (qb[0].Cost - qb[1].Cost) / (qb[0].WeeklyPoints - qb[1].WeeklyPoints) : 0;
-                    slope["RB1"] = rb1.Count > 1 ? (rb1[0].Cost - rb1[1].Cost) / (rb1[0].WeeklyPoints - rb1[1].WeeklyPoints) : 0;
-                    slope["RB2"] = rb2.Count > 1 ? (rb2[0].Cost - rb2[1].Cost) / (rb2[0].WeeklyPoints - rb2[1].WeeklyPoints) : 0;
-                    slope["WR1"] = wr1.Count > 1 ? (wr1[0].Cost - wr1[1].Cost) / (wr1[0].WeeklyPoints - wr1[1].WeeklyPoints) : 0;
-                    slope["WR2"] = wr2.Count > 1 ? (wr2[0].Cost - wr2[1].Cost) / (wr2[0].WeeklyPoints - wr2[1].WeeklyPoints) : 0;
-                    slope["TE"] = te.Count > 1 ? (te[0].Cost - te[1].Cost) / (te[0].WeeklyPoints - te[1].WeeklyPoints) : 0;
-                    slope["FLEX"] = flex.Count > 1 ? (flex[0].Cost - flex[1].Cost) / (flex[0].WeeklyPoints - flex[1].WeeklyPoints) : 0;
-                    slope["DEF"] = def.Count > 1 ? (def[0].Cost - def[1].Cost) / (def[0].WeeklyPoints - def[1].WeeklyPoints) : 0;
-                    slope["K"] = k.Count > 1 ? (k[0].Cost - k[1].Cost) / (k[0].WeeklyPoints - k[1].WeeklyPoints) : 0;
+                    slope["QB"] = qb.Count > 1 ? (qb[0].Cost - qb[1].Cost) / (qb[0].WeeklyPoints - qb[1].WeeklyPoints) : -10000;
+                    slope["RB1"] = rb1.Count > 1 ? (rb1[0].Cost - rb1[1].Cost) / (rb1[0].WeeklyPoints - rb1[1].WeeklyPoints) : -10000;
+                    slope["RB2"] = rb2.Count > 1 ? (rb2[0].Cost - rb2[1].Cost) / (rb2[0].WeeklyPoints - rb2[1].WeeklyPoints) : -10000;
+                    slope["WR1"] = wr1.Count > 1 ? (wr1[0].Cost - wr1[1].Cost) / (wr1[0].WeeklyPoints - wr1[1].WeeklyPoints) : -10000;
+                    slope["WR2"] = wr2.Count > 1 ? (wr2[0].Cost - wr2[1].Cost) / (wr2[0].WeeklyPoints - wr2[1].WeeklyPoints) : -10000;
+                    slope["TE"] = te.Count > 1 ? (te[0].Cost - te[1].Cost) / (te[0].WeeklyPoints - te[1].WeeklyPoints) : -10000;
+                    slope["FLEX"] = flex.Count > 1 ? (flex[0].Cost - flex[1].Cost) / (flex[0].WeeklyPoints - flex[1].WeeklyPoints) : -10000;
+                    slope["DEF"] = def.Count > 1 ? (def[0].Cost - def[1].Cost) / (def[0].WeeklyPoints - def[1].WeeklyPoints) : -10000;
+                    slope["K"] = k.Count > 1 ? (k[0].Cost - k[1].Cost) / (k[0].WeeklyPoints - k[1].WeeklyPoints) : -10000;
                     maxSlope = slope.MaxBy(x => x.Value).Key;
 
                     if (maxSlope == "QB")
@@ -604,6 +605,216 @@ namespace FantasyFootball.Logic.Implementations
             return csv.ToString();
         }
 
+        public List<Player> AddTopTags(List<Player> players, int qb, int rb1, int rb2, int wr1, int wr2, int te, int flex, int def, int k)
+        {
+            players.FirstOrDefault(x => x.PlayerID == qb).Tags.Add("Top QB");
+            players.FirstOrDefault(x => x.PlayerID == rb1).Tags.Add("Top RB1");
+            players.FirstOrDefault(x => x.PlayerID == rb2).Tags.Add("Top RB2");
+            players.FirstOrDefault(x => x.PlayerID == wr1).Tags.Add("Top WR1");
+            players.FirstOrDefault(x => x.PlayerID == wr2).Tags.Add("Top WR2");
+            players.FirstOrDefault(x => x.PlayerID == te).Tags.Add("Top TE");
+            players.FirstOrDefault(x => x.PlayerID == flex).Tags.Add("Top FLEX");
+            players.FirstOrDefault(x => x.PlayerID == def).Tags.Add("Top DEF");
+            players.FirstOrDefault(x => x.PlayerID == k).Tags.Add("Top K");
+            return players;
+        }
+
+        public List<Rosters> BuildBestRosters(List<Player> players, Rules rules, double targetPoints)
+        {
+
+
+            List<Player> playersInConsideration = FilterDraftablePlayers(players.OrderByDescending(x=>x.WeeklyPoints).ToList(), rules);
+
+            List<Player> draftList = PrepareDraftList(playersInConsideration, rules);
+
+            List<Rosters> bestRosters = EvaluateAllRosterCombinations(draftList, rules, targetPoints);
+
+            return bestRosters;
+        }
+
+        public List<Player> FilterDraftablePlayers(List<Player> players, Rules rules)
+        {
+            List<Player> draftablePlayers = new List<Player>();
+            Dictionary<string, int> currentPosition = new Dictionary<string, int>()
+            {
+                {"QB", 0 },
+                {"RB", 0 },
+                {"WR", 0 },
+                {"TE", 0 },
+                {"DEF", 0 },
+                {"K", 0 }
+            };
+            Dictionary<string, int> maxPosition = new Dictionary<string, int>()
+            {           
+                {"QB", rules.Teams * rules.QB - 3},
+                {"RB", rules.Teams * (rules.RB + rules.FLEX) - 10},
+                {"WR", rules.Teams * (rules.WR + rules.FLEX) - 10},
+                {"TE", rules.Teams * rules.TE - 3},
+                {"DEF", rules.Teams * rules.DEF - 5},
+                {"K", rules.Teams * rules.K - 5}
+            };
+            foreach (Player player in players)
+            {
+                if (currentPosition[player.Position] < maxPosition[player.Position])
+                {
+                    draftablePlayers.Add(player);
+                    currentPosition[player.Position] += 1;
+                }
+            }
+            return draftablePlayers;
+        }
+
+        public List<Player> PrepareDraftList(List<Player> players, Rules rules)
+        {
+            List<Player> draftList = new List<Player>();
+            foreach (Player player in players)
+            {
+                if (player.Position == "RB")
+                {
+                    player.Position = "RB1";
+                    draftList.Add(DuplicatePlayer(player, "RB2"));
+                    draftList.Add(DuplicatePlayer(player, "FLEX"));
+                }
+                if (player.Position == "WR")
+                {
+                    player.Position = "WR1";
+                    draftList.Add(DuplicatePlayer(player, "WR2"));
+                    draftList.Add(DuplicatePlayer(player, "FLEX"));
+                }
+                draftList.Add(player);
+            }
+            return draftList;
+        }
+
+        public Player DuplicatePlayer(Player player, string newPosition)
+        {
+            Player duplicatePlayer = new Player()
+            {
+                PlayerID = player.PlayerID,
+                LastName = player.LastName,
+                FirstInitial = player.FirstInitial,
+                Team = player.Team,
+                Position = newPosition,
+                WeeklyPoints = player.WeeklyPoints,
+                Cost = player.Cost,
+                QB1 = player.QB1,
+                RB1 = player.RB1,
+                RB2 = player.RB2,
+                WR1 = player.WR1,
+                WR2 = player.WR2,
+                TE1 = player.TE1,
+                FLEX = player.FLEX,
+                DEF = player.DEF,
+                K = player.K,
+                FA = player.FA,
+                ExpectedValueLow = player.ExpectedValueLow,
+                ExpectedValue = player.ExpectedValue,
+                ExpectedValueHigh = player.ExpectedValueHigh,
+                Tags = player.Tags
+    };
+            return duplicatePlayer;
+        }
+
+        public List<Rosters> EvaluateAllRosterCombinations(List<Player> players, Rules rules, double targetPoints)
+        {
+            List<Rosters> rosters = new List<Rosters>();
+
+            List<Player> qbs = players.Where(x => x.Position == "QB").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> rb1s = players.Where(x => x.Position == "RB1").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> rb2s = players.Where(x => x.Position == "RB2").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> wr1s = players.Where(x => x.Position == "WR1").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> wr2s = players.Where(x => x.Position == "WR2").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> tes = players.Where(x => x.Position == "TE").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> flexs = players.Where(x => x.Position == "FLEX").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> defs = players.Where(x => x.Position == "DEF").OrderByDescending(x => x.WeeklyPoints).ToList();
+            List<Player> ks = players.Where(x => x.Position == "K").OrderByDescending(x => x.WeeklyPoints).ToList();
+
+            rb2s.RemoveAt(0);
+            wr2s.RemoveAt(0);
+            flexs.RemoveAt(0);
+            flexs.RemoveAt(0);
+
+            int salary = 0;
+            int salaryCap = rules.SalaryCap - rules.Bench;
+            double points = 0;
+            int counter = 0;
+
+            foreach (Player qb in qbs)
+            {
+                foreach(Player rb1 in rb1s)
+                {
+                    foreach(Player rb2 in rb2s)
+                    {
+                        if (rb2.PlayerID != rb1.PlayerID && rb1.WeeklyPoints >= rb2.WeeklyPoints)
+                        {
+                            foreach (Player wr1 in wr1s)
+                            {
+                                salary = qb.Cost + rb1.Cost + rb2.Cost + wr1.Cost;
+                                if (salary + 5 <= salaryCap)
+                                {
+                                    foreach (Player wr2 in wr2s)
+                                    {
+                                        salary = qb.Cost + rb1.Cost + rb2.Cost + wr1.Cost + wr2.Cost;
+                                        if (wr2.PlayerID != wr1.PlayerID && wr1.WeeklyPoints >= wr1.WeeklyPoints && salary + 4 <= salaryCap)
+                                        {
+                                            foreach (Player te in tes)
+                                            {
+                                                salary = qb.Cost + rb1.Cost + rb2.Cost + wr1.Cost + wr2.Cost + te.Cost;
+                                                points = qb.WeeklyPoints + rb1.WeeklyPoints + rb2.WeeklyPoints + wr1.WeeklyPoints + wr2.WeeklyPoints + te.WeeklyPoints;
+                                                if (salary + 3 <= salaryCap && (points + Math.Max(rb2.WeeklyPoints, wr2.WeeklyPoints) + defs[0].WeeklyPoints + ks[0].WeeklyPoints) >= targetPoints)
+                                                {
+                                                    foreach (Player flex in flexs)
+                                                    {
+                                                        salary = qb.Cost + rb1.Cost + rb2.Cost + wr1.Cost + wr2.Cost + te.Cost + flex.Cost;
+                                                        if (salary + 2 <= salaryCap && rb2.WeeklyPoints >= flex.WeeklyPoints && wr2.WeeklyPoints >= flex.WeeklyPoints && flex.PlayerID != rb1.PlayerID && flex.PlayerID != rb2.PlayerID && flex.PlayerID != wr1.PlayerID && flex.PlayerID != wr2.PlayerID)
+                                                        {
+                                                            foreach (Player k in ks)
+                                                            {
+                                                                foreach (Player def in defs)
+                                                                {
+                                                                    counter += 1;
+
+
+
+                                                                    Rosters roster = new Rosters()
+                                                                    {
+    
+                                                                        Cost = qb.Cost + rb1.Cost + rb2.Cost + wr1.Cost + wr2.Cost + te.Cost + flex.Cost + def.Cost + k.Cost,
+                                                                        TotalPoints = Math.Round(qb.WeeklyPoints + rb1.WeeklyPoints + rb2.WeeklyPoints + wr1.WeeklyPoints + wr2.WeeklyPoints + te.WeeklyPoints + flex.WeeklyPoints + def.WeeklyPoints + k.WeeklyPoints, 1),
+                                                                        QB = qb.PlayerID,
+                                                                        RB1 = rb1.PlayerID,
+                                                                        RB2 = rb2.PlayerID,
+                                                                        WR1 = wr1.PlayerID,
+                                                                        WR2 = wr2.PlayerID,
+                                                                        TE = te.PlayerID,
+                                                                        FLEX = flex.PlayerID,
+                                                                        DEF = def.PlayerID,
+                                                                        K = k.PlayerID
+                                                                    };
+                                                                    if (roster.Cost <= salaryCap && roster.TotalPoints >= targetPoints)
+                                                                    {
+                                                                        rosters.Add(roster);
+                                                                    }
+                                                                    
+                                                                    
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+
+            return rosters.OrderByDescending(x=>x.TotalPoints).ToList();
+        }
 
     }
 }
